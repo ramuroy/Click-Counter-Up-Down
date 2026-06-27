@@ -8,7 +8,7 @@ This project demonstrates a simple **Click Counter** system using an **Arduino b
 - **1 x 7-Segment Display**
 - **Jumper wires**
 - **Breadboard**
-- **Resistors** (for the push buttons)
+- **Resistors** (≈220–330 Ω, one per 7-segment segment — the buttons need none; they use the internal pull-ups)
 
 ## ⚙️ How It Works:
 - Two push buttons are used to control the counting:
@@ -30,8 +30,8 @@ Watch the **Click Counter (Up and Down)** project in action!
 
 ## 🔧 Circuit Diagram:
 Below is a basic description of the circuit:
-- **7-Segment Display**: Each segment (A-G) of the display is connected to a separate pin on the Arduino board.
-- **Push Buttons**: Connected to digital input pins on the Arduino, with pull-down resistors to ensure stable readings.
+- **7-Segment Display**: A **common-cathode** display; segments A–G connect through current-limiting resistors to Arduino pins **D4–D10**, with the common pin to **GND**.
+- **Push Buttons**: The **Up** button on **D2** and the **Down** button on **D3**, each wired from the pin to **GND**. The sketch enables the internal **pull-up** resistors (`INPUT_PULLUP`), so a press reads **LOW** (active-low) — no external button resistors are required.
 
 ## 🚀 How to Use:
 1. **Set up the hardware**: Connect the push buttons and 7-segment display to the Arduino following the provided circuit diagram.
