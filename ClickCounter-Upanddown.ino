@@ -11,6 +11,19 @@
 
 int count = 0;  // Initialize counter to 0
 
+// Debounced, edge-detected push button (active-low with internal pull-up).
+struct Button {
+  uint8_t pin;
+  int stable;             // last debounced state
+  int lastReading;        // last raw reading
+  unsigned long lastChange;
+};
+
+const unsigned long DEBOUNCE_MS = 50;
+
+Button btnUp   = {BUTTON_UP_PIN, HIGH, HIGH, 0};
+Button btnDown = {BUTTON_DOWN_PIN, HIGH, HIGH, 0};
+
 // Segment values for 7-segment display (0-9) defined with HIGH and LOW
 const bool digit[10][7] = {
   {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, LOW},  // 0
@@ -43,24 +56,32 @@ void setup() {
   displayNumber(count);
 }
 
+// Returns true once, on the press edge (active-low), with debouncing.
+bool justPressed(Button &b) {
+  int reading = digitalRead(b.pin);
+  if (reading != b.lastReading) {       // input changed: restart debounce timer
+    b.lastChange = millis();
+    b.lastReading = reading;
+  }
+  if ((millis() - b.lastChange) > DEBOUNCE_MS && reading != b.stable) {
+    b.stable = reading;                 // accept the new stable state
+    if (b.stable == LOW) return true;   // a fresh press
+  }
+  return false;
+}
+
 void loop() {
-  // Read the button states
-  if (digitalRead(BUTTON_UP_PIN) == LOW) {
+  // Count once per press (edge-detected) instead of repeating while held.
+  if (justPressed(btnUp)) {
     count++;
-    if (count > 9) {
-      count = 0;  // Reset to 0 after 9
-    }
+    if (count > 9) count = 0;           // wrap 9 -> 0
     displayNumber(count);
-    delay(200);  // Debounce delay
   }
 
-  if (digitalRead(BUTTON_DOWN_PIN) == LOW) {
+  if (justPressed(btnDown)) {
     count--;
-    if (count < 0) {
-      count = 9;  // Reset to 9 after 0
-    }
+    if (count < 0) count = 9;           // wrap 0 -> 9
     displayNumber(count);
-    delay(200);  // Debounce delay
   }
 }
 
