@@ -66,7 +66,7 @@ void loop() {
 
 // Function to display a number (0-9) on the 7-segment display using HIGH/LOW
 void displayNumber(int num) {
-  bool* segments = digit[num];  // Get the segment values for the number
+  const bool* segments = digit[num];  // Get the segment values for the number
 
   // Set the pins for the segments according to the values
   digitalWrite(SEG_A, segments[0]);
